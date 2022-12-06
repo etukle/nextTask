@@ -7,7 +7,7 @@
         "build": "rm -rm backend/build/ && tsc",
         "start": "node backend/build/server.js",
         "nodemon": "nodemon --watch './**/*.ts' --exec 'ts-node' backend/src/server.ts",
-        "test": "jest --forceExit"
+        "test": "jest --forceExit && react-scripts test"
     },
     "author": "Evren Tukle",
     "license": "ISC",
