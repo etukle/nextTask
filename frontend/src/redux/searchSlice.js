@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { setData } from './siteSlice';
 
 const initialState = {
     site: {

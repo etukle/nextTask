@@ -16,7 +16,6 @@ const DataContainer = () => {
 
     const [error, setError] = React.useState(false);
     const [resultWarning, setResultWarning] = React.useState(false);
-    const [searched, setSearched] = React.useState(false);
 
     const handleScroll = async () => {
         if (window.innerHeight + document.documentElement.scrollTop + 1 >= document.documentElement.scrollHeight) {
@@ -32,7 +31,6 @@ const DataContainer = () => {
     const handleSearch = async () => {
         if (searchTerm !== '') {
             await dispatch(fetchResults());
-            setSearched(true);
             dataSource.length === 0 ? setResultWarning(true) : setResultWarning(false);
         } else {
             setError(true);
@@ -46,12 +44,11 @@ const DataContainer = () => {
         await dispatch(setSearchTerm(''));
         await dispatch(setOffset(0));
         await dispatch(setData([]));
-        setSearched(false);
         setResultWarning(false);
     };
 
     return (
-        <Grid spacing={2}>
+        <Grid container spacing={2}>
             <Grid item xs={12}>
                 <Box
                     sx={{
@@ -63,8 +60,11 @@ const DataContainer = () => {
                     }}
                 >
                     <TextField fullWidth label="Search" id="fullWidth" value={searchTerm} onChange={(e) => dispatch(setSearchTerm(e.target.value))} />
-                    <Button variant="contained" onClick={() => (searched ? handleClear() : handleSearch())}>
-                        {searched ? 'Clear' : 'Search'}
+                    <Button variant="contained" onClick={() => handleSearch()}>
+                        Search
+                    </Button>
+                    <Button variant="contained" onClick={() => handleClear()}>
+                        Clear
                     </Button>
                 </Box>
             </Grid>

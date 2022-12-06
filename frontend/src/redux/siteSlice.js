@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchData } from '../helpers/network';
-import { useSelector } from 'react-redux';
 
 const initialState = {
     site: {
