@@ -5,18 +5,18 @@
     "main": "backend/src/server.ts",
     "scripts": {
         "build": "rm -rm backend/build/ && tsc",
-        "start": "node backend/build/server.js",
-        "nodemon": "nodemon --watch './**/*.ts' --exec 'ts-node' backend/src/server.ts",
+        "server": "node backend/build/server.js",
+        "start": "concurrently \"nodemon --watch './**/*.ts' --exec 'ts-node' backend/src/server.ts\" \" cd frontend && npm start \" ",
         "test": "jest --forceExit && react-scripts test"
     },
     "author": "Evren Tukle",
     "license": "ISC",
     "dependencies": {
-        "chalk": "^4.1.2",
+        "chalk": "^5.1.2",
+        "concurrently": "^7.6.0",
         "dotenv": "^16.0.3",
         "express": "^4.18.2",
         "joi": "^17.7.0",
-        "mongoose": "^6.7.5",
         "nodemon": "^2.0.20",
         "sequelize": "^6.26.0",
         "sqlite": "^4.1.2",

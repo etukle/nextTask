@@ -1,13 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { SongInstance } from '../models/songModel';
-//import { Database } from 'sqlite3';
 var sqlite3 = require('sqlite3').verbose();
 var sqlite = require('sqlite');
-import Logging from '../library/Logging';
-
-//var db = new sqlite3.Database('database.sqlite');
-
-//const db = new Database('database.sqlite');
 
 async function connect() {
     return sqlite.open({
@@ -18,12 +12,9 @@ async function connect() {
 }
 
 export const getSongs = async (req: Request, res: Response, next: NextFunction) => {
-    console.log('reqq: ', req.body);
     const term = req.body.search_term;
     const offset = req.body.offset;
-    console.log('term: ', term);
     try {
-        //const rows = await SongInstance.findAll({ where: { title: 'best' }, limit: 10, offset });
         const query = `SELECT * FROM songs WHERE
         title LIKE '%${term}%' OR
         artist LIKE '%${term}%' OR
