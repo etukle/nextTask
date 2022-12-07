@@ -11,15 +11,20 @@ const DataContainer = () => {
     const dispatch = useDispatch<any>();
     const dataSource = useSelector((state: any) => state.siteData.site.data);
     const searchBoxText = useSelector((state: any) => state.searchData.site.searchBox);
-    const searchTerm = useSelector((state: any) => state.searchData.site.searchTerm);
+    const offset = useSelector((state: any) => state.searchData.site.offset);
 
     const [error, setError] = React.useState(false);
+    const [resultWarning, setResultWarning] = React.useState(false);
 
     const handleSearch = async () => {
         if (searchBoxText !== '') {
             await dispatch(setData([]));
+            setResultWarning(false);
             await dispatch(setSearchTerm(searchBoxText));
             await dispatch(fetchResults());
+            if (dataSource.length === 0) {
+                setResultWarning(true);
+            }
         } else {
             setError(true);
             setInterval(() => {
@@ -36,6 +41,7 @@ const DataContainer = () => {
     };
 
     const loadFunc = async () => {
+        await dispatch(setOffset(offset + 10));
         await dispatch(fetchResults());
     };
     return (
@@ -67,7 +73,7 @@ const DataContainer = () => {
                     </Alert>
                 </div>
             )}
-            <div style={{ display: 'grid', justifyContent: 'center', alignItems: 'center', marginTop: 100, marginBottom: 50 }}>
+            <Grid container direction="column" justifyContent="flex-start" alignItems="center" sx={{ py: 12 }}>
                 <InfiniteScroll
                     dataLength={dataSource.length} //This is important field to render the next data
                     next={loadFunc}
@@ -87,14 +93,14 @@ const DataContainer = () => {
                         );
                     })}
                 </InfiniteScroll>
-            </div>
-            {/* {resultWarning && (
+            </Grid>
+            {resultWarning && (
                 <div style={{ display: 'grid', justifyContent: 'center', alignItems: 'center' }}>
                     <Typography variant="h5" component="div" style={{ marginTop: 25 }}>
                         Could not find any results
                     </Typography>
                 </div>
-            )} */}
+            )}
         </div>
     );
 };
