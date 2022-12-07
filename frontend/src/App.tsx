@@ -1,12 +1,12 @@
 import React from 'react';
-import Grid from '@mui/material/Grid';
 import DataContainer from './components/DataContainer';
+import { Container } from '@mui/material';
 
 function App() {
     return (
-        <Grid>
+        <>
             <DataContainer />
-        </Grid>
+        </>
     );
 }
 

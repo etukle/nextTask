@@ -1,42 +1,30 @@
 import React from 'react';
-import { Alert, AlertTitle, Button, Card, CardContent, Grid, TextField, Typography } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchResults } from '../redux/siteSlice';
+import { Alert, AlertTitle, Button, Card, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
-import { setSearchTerm, setOffset } from '../redux/searchSlice';
-import { setData } from '../redux/siteSlice';
+import { setData, fetchResults } from '../redux/siteSlice';
+import { setSearchBox, setSearchTerm, setOffset } from '../redux/searchSlice';
+import { useSelector, useDispatch } from 'react-redux';
 import Item from './Item';
-import { useEffect } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const DataContainer = () => {
     const dispatch = useDispatch<any>();
     const dataSource = useSelector((state: any) => state.siteData.site.data);
-    const offset = useSelector((state: any) => state.searchData.site.offset);
+    const searchBoxText = useSelector((state: any) => state.searchData.site.searchBox);
     const searchTerm = useSelector((state: any) => state.searchData.site.searchTerm);
 
     const [error, setError] = React.useState(false);
-    const [resultWarning, setResultWarning] = React.useState(false);
-
-    const handleScroll = async () => {
-        if (window.innerHeight + document.documentElement.scrollTop + 1 >= document.documentElement.scrollHeight) {
-            await dispatch(setOffset(offset + 10));
-            handleSearch();
-        }
-    };
-
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll);
-    });
 
     const handleSearch = async () => {
-        if (searchTerm !== '') {
+        if (searchBoxText !== '') {
+            await dispatch(setData([]));
+            await dispatch(setSearchTerm(searchBoxText));
             await dispatch(fetchResults());
-            dataSource.length === 0 ? setResultWarning(true) : setResultWarning(false);
         } else {
             setError(true);
             setInterval(() => {
                 setError(false);
-            }, 2500);
+            }, 3000);
         }
     };
 
@@ -44,12 +32,14 @@ const DataContainer = () => {
         await dispatch(setSearchTerm(''));
         await dispatch(setOffset(0));
         await dispatch(setData([]));
-        setResultWarning(false);
     };
 
+    const loadFunc = async () => {
+        await dispatch(fetchResults());
+    };
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
+        <div>
+            <div style={{ position: 'fixed', left: 0, right: 0, top: 0 }}>
                 <Box
                     sx={{
                         p: 2,
@@ -59,7 +49,7 @@ const DataContainer = () => {
                         gap: 2
                     }}
                 >
-                    <TextField fullWidth label="Search" id="fullWidth" value={searchTerm} onChange={(e) => dispatch(setSearchTerm(e.target.value))} />
+                    <TextField fullWidth label="Search" id="fullWidth" value={searchBoxText} onChange={(e) => dispatch(setSearchBox(e.target.value))} />
                     <Button variant="contained" onClick={() => handleSearch()}>
                         Search
                     </Button>
@@ -67,29 +57,44 @@ const DataContainer = () => {
                         Clear
                     </Button>
                 </Box>
-            </Grid>
+            </div>
             {error && (
-                <Alert severity="error">
-                    <AlertTitle>Error</AlertTitle>
-                    Input can not be empty — <strong>check it out!</strong>
-                </Alert>
+                <div style={{ marginTop: 90 }}>
+                    <Alert severity="error">
+                        <AlertTitle>Error</AlertTitle>
+                        Input can not be empty — <strong>check it out!</strong>
+                    </Alert>
+                </div>
             )}
-            {dataSource.map((item: any) => {
-                return <Item key={item.id} title={item.title} artist={item.artist} album={item.album} />;
-            })}
-
-            {resultWarning && (
-                <Grid container spacing={3}>
-                    <Grid item xs></Grid>
-                    <Grid item xs>
-                        <Typography variant="h5" component="div" style={{ marginTop: 25 }}>
-                            Could not find any results
-                        </Typography>
-                    </Grid>
-                    <Grid item xs></Grid>
-                </Grid>
-            )}
-        </Grid>
+            <div style={{ display: 'grid', justifyContent: 'center', alignItems: 'center', marginTop: 100, marginBottom: 50 }}>
+                <InfiniteScroll
+                    dataLength={dataSource.length} //This is important field to render the next data
+                    next={loadFunc}
+                    hasMore={true}
+                    loader={<></>}
+                    endMessage={
+                        <p style={{ textAlign: 'center' }}>
+                            <b>Yay! You have seen it all</b>
+                        </p>
+                    }
+                >
+                    {dataSource.map((item: any) => {
+                        return (
+                            <Container>
+                                <Item key={item.id} title={item.title} artist={item.artist} album={item.album} />
+                            </Container>
+                        );
+                    })}
+                </InfiniteScroll>
+            </div>
+            {/* {resultWarning && (
+                <div style={{ display: 'grid', justifyContent: 'center', alignItems: 'center' }}>
+                    <Typography variant="h5" component="div" style={{ marginTop: 25 }}>
+                        Could not find any results
+                    </Typography>
+                </div>
+            )} */}
+        </div>
     );
 };
 
