@@ -29,6 +29,7 @@ const DataContainer = () => {
     };
 
     const handleClear = async () => {
+        await dispatch(setSearchBox(''));
         await dispatch(setSearchTerm(''));
         await dispatch(setOffset(0));
         await dispatch(setData([]));
